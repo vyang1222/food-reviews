@@ -1,10 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import "./index.css";
+import Home from "./pages/Home/Home.js";
+
+import "./index.scss";
 
 const App = () => {
-  return <div>Hello</div>;
+  return (
+    <div className="container">
+      <Home />
+    </div>
+  );
 };
 
 ReactDOM.render(
