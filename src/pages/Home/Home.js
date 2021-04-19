@@ -1,6 +1,6 @@
 import React from "react";
 
-import { createRoom, joinRoom, clearRooms } from "../../backend/db/dbAPI";
+import { createRoom, joinRoom, submitPrefs, clearRooms, getRestaurants } from "../../backend/db/dbAPI";
 import { getSearchResults } from "../../backend/YelpAPI";
 import "./Home.module.scss";
 
@@ -16,7 +16,7 @@ const Home = (props) => {
       </button>
       <button
         onClick={() => {
-          const roomID = "H6YEQC";
+          const roomID = "V9T7QO";
           joinRoom(roomID, "Bob");
         }}
       >
@@ -24,10 +24,24 @@ const Home = (props) => {
       </button>
       <button
         onClick={() => {
+          submitPrefs("1000", "1", "", "");
+        }}
+      >
+        submit prefs
+      </button>
+      <button
+        onClick={() => {
           getSearchResults("UT Austin", 1000, "1", "", "").then((res) => console.log(res));
         }}
       >
         get results
+      </button>
+      <button
+        onClick={() => {
+          getRestaurants();
+        }}
+      >
+        get restaurants
       </button>
       <button
         onClick={() => {
