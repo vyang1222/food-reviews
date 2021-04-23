@@ -30,6 +30,7 @@ export const joinRoom = async (roomID, userName) => {
 export const submitPrefs = async (radius, price, categories, attributes) => {
   try {
     await axios.post("/submitPrefs", {
+      roomID: sessionStorage.getItem("roomID"),
       credentials: sessionStorage.getItem("credentials"),
       radius: radius,
       price: price,
@@ -41,16 +42,16 @@ export const submitPrefs = async (radius, price, categories, attributes) => {
   }
 };
 
-export const getRestaurants = async () => {
-  try {
-    await axios.get("/getRestaurants", {
-      credentials: sessionStorage.getItem("credentials"),
-      roomID: sessionStorage.getItem("roomID"),
-    });
-  } catch (err) {
-    console.log(err);
-  }
-};
+// export const getRestaurants = async () => {
+//   try {
+//     await axios.get("/getRestaurants", {
+//       credentials: sessionStorage.getItem("credentials"),
+//       roomID: sessionStorage.getItem("roomID"),
+//     });
+//   } catch (err) {
+//     console.log(err);
+//   }
+// };
 
 // (eventually will be automatic)
 export const clearRooms = async () => {

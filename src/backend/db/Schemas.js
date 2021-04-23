@@ -10,16 +10,7 @@ const RestaurantSchema = new Schema({
 });
 
 const PreferencesSchema = new Schema({
-  radius: {
-    type: Number,
-    required: true,
-    min: 0,
-    max: 40000,
-    validate: {
-      validator: Number.isInteger,
-      message: "{VALUE} is not an integer value",
-    },
-  },
+  radius: { type: Number, required: true, min: 0, max: 40000 },
   price: { type: String, required: true },
   categories: { type: String },
   attributes: { type: String },
@@ -35,17 +26,10 @@ const UserSchema = new Schema({
 const RoomSchema = new Schema({
   roomID: { type: String, required: true, unique: true, minLength: 6, maxLength: 6 },
   location: { type: String, required: true },
-  numUsers: {
-    type: Number,
-    required: true,
-    min: 0,
-    max: maxUsers,
-    validate: {
-      validator: Number.isInteger,
-      message: "{VALUE} is not an integer value",
-    },
-  },
+  numUsers: { type: Number, required: true, min: 0, max: maxUsers },
   users: [{ type: Schema.Types.ObjectId, ref: "users" }],
+  numPrefsDone: { type: Number, default: 0, min: 0, max: maxUsers },
+  numPicksDone: { type: Number, default: 0, min: 0, max: maxUsers },
   restaurantPick: { type: Schema.Types.ObjectId, ref: "restaurants" },
 });
 
