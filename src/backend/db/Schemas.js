@@ -25,7 +25,9 @@ const UserSchema = new Schema({
 
 const RoomSchema = new Schema({
   roomID: { type: String, required: true, unique: true, minLength: 6, maxLength: 6 },
-  location: { type: String, required: true },
+  location: { type: String },
+  latitude: { type: Number },
+  longitude: { type: Number },
   numUsers: { type: Number, required: true, min: 0, max: maxUsers },
   users: [{ type: Schema.Types.ObjectId, ref: "users" }],
   numPrefsDone: { type: Number, default: 0, min: 0, max: maxUsers },

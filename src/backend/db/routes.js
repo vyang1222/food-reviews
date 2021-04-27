@@ -13,9 +13,14 @@ router.post("/createRoom", async (req, res) => {
     name: hostName,
     credentials: nanoid(),
   });
+
+  const _location = Array.isArray(location)
+    ? { latitude: location[0], longitude: location[1] }
+    : { location: location };
+
   const room = new Room({
     roomID: generateRoomID(),
-    location: location,
+    ..._location,
     numUsers: numUsers,
     users: [host],
   });
