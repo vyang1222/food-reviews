@@ -15,7 +15,7 @@ export const getSearchResults = async (location, radius, price, categories, attr
       location: location,
       radius: radius,
       price: price,
-      categories: `restaurants${categories !== "" ? "," + categories : ""}`,
+      categories: `${categories}`,
       ...(attributes !== "" ? { attributes: this.attributes } : {}),
     },
   });

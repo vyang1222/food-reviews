@@ -3,7 +3,9 @@ import mongoose from "mongoose";
 import express from "express";
 import { EventEmitter } from "events";
 import cors from "cors";
-import { Room } from "./db/Schemas";
+
+import { User, Room } from "./db/Schemas";
+import { dummyRestaurants, winner } from "../utilities/misc";
 
 const eventEmitter = new EventEmitter();
 const routesHandler = require("./db/routes");
@@ -22,16 +24,37 @@ app.use("/:roomID/listen", async (req, res) => {
     "Content-Type": "text/event-stream",
   });
 
+  eventEmitter.on(`${roomID}.users`, (name) => {
+    res.write("event: newUser\n");
+    res.write(`data: ${name}\n\n`);
+  });
+
   eventEmitter.on(`${roomID}.choices`, (choices) => {
-    res.write("data: choices are done!\n\n");
+    res.write("event: choices\n");
+    res.write(`data: ${choices}\n\n`);
+  });
+
+  eventEmitter.on(`${roomID}.results`, (winner) => {
+    res.write("event: results\n");
+    res.write(`data: ${winner}\n\n`);
   });
 });
 
-// DB Connection
+// DB Connection + Change Stream
 mongoose
   .connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log("DB Connected!");
+
+    User.watch({ fullDocument: "updateLookup" }).on("change", (data) => {
+      if (data.operationType === "insert") {
+        const {
+          fullDocument: { name, roomID },
+        } = data;
+        eventEmitter.emit(`${roomID}.users`, name);
+      }
+    });
+
     Room.watch({ fullDocument: "updateLookup" }).on("change", (data) => {
       if (data.operationType === "update" && data.ns.coll === "rooms") {
         const {
@@ -40,15 +63,12 @@ mongoose
           updateDescription: { updatedFields },
         } = data;
         if (updatedFields.hasOwnProperty("numPrefsDone") && numPrefsDone === numUsers) {
-          console.log("EXECUTING THE ALGORITHM...\n");
-          /* TODO: replace with roomID */
-          eventEmitter.emit(`ABCDEF.choices`, [
-            { name: "Restaurant X", address: "Address X" },
-            { name: "Restaurant Y", address: "Address Y" },
-            { name: "Restaurant Z", address: "Address Z" },
-          ]);
-        } else if (updatedFields.hasOwnProperty("numPickssDone") && numPicksDone === numUsers) {
-          console.log("GETTING THE FINAL PICKS...\n");
+          console.log("EXECUTING THE ALGORITHM...");
+          /* TODO: replace with algorithm results */
+          eventEmitter.emit(`${roomID}.choices`, JSON.stringify(dummyRestaurants));
+        } else if (updatedFields.hasOwnProperty("numPicksDone") && numPicksDone === numUsers) {
+          console.log("GETTING THE FINAL PICKS...");
+          eventEmitter.emit(`${roomID}.results`, JSON.stringify(winner));
         }
       }
     });

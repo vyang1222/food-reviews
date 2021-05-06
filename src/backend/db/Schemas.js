@@ -1,13 +1,7 @@
 import mongoose from "mongoose";
 
-const maxUsers = 32; // a reasonable number
+const maxUsers = 100; // a reasonable number
 const Schema = mongoose.Schema;
-
-const RestaurantSchema = new Schema({
-  name: { type: String, required: true },
-  address: { type: String, required: true },
-  imageURL: { type: String },
-});
 
 const PreferencesSchema = new Schema({
   radius: { type: Number, required: true, min: 0, max: 40000 },
@@ -19,8 +13,9 @@ const PreferencesSchema = new Schema({
 const UserSchema = new Schema({
   name: { type: String, required: true, maxLength: 50 },
   credentials: { type: String, required: true },
+  roomID: { type: String, required: true, minLength: 6, maxLength: 6 },
   preferences: { type: Schema.Types.ObjectId, ref: "preferences", default: null },
-  restaurantsPick: { type: [{ type: Schema.Types.ObjectId, ref: "restaurants" }], default: null },
+  picks: { type: [String], default: null },
 });
 
 const RoomSchema = new Schema({
@@ -32,10 +27,8 @@ const RoomSchema = new Schema({
   users: [{ type: Schema.Types.ObjectId, ref: "users" }],
   numPrefsDone: { type: Number, default: 0, min: 0, max: maxUsers },
   numPicksDone: { type: Number, default: 0, min: 0, max: maxUsers },
-  restaurantPick: { type: Schema.Types.ObjectId, ref: "restaurants" },
 });
 
-export const Restaurant = mongoose.model("restaurants", RestaurantSchema, "restaurants");
 export const Preferences = mongoose.model("preferences", PreferencesSchema, "preferences");
 export const User = mongoose.model("users", UserSchema, "users");
 export const Room = mongoose.model("rooms", RoomSchema, "rooms");

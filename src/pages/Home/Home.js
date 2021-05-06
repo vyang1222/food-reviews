@@ -1,69 +1,35 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapMarkerAlt, faSignInAlt } from "@fortawesome/free-solid-svg-icons";
-
-import { createRoom, joinRoom } from "../../backend/db/dbAPI";
 import cx from "classnames";
+
+import { createRoom, joinRoom } from "../../backend/dbAPI";
+// import { clearRooms } from "../../backend/dbAPI";
+// import { getSearchResults } from "../../backend/YelpAPI";
+
 import styles from "./Home.module.scss";
 
-// const Home = (props) => {
-
-//   return (
-//     <div>
-//       <button
-//         onClick={() => {
-//           createRoom(2, "UT Austin", "Victor");
-//         }}
-//       >
-//         create room
-//       </button>
-//       <button
-//         onClick={() => {
-//           const roomID = "4R9OTX";
-//           joinRoom(roomID, "Bob");
-//         }}
-//       >
-//         join room
-//       </button>
-//       <button
-//         onClick={() => {
-//           submitPrefs("1000", "1", "", "");
-//         }}
-//       >
-//         submit prefs
-//       </button>
-//       <button
-//         onClick={() => {
-//           getSearchResults("UT Austin", 1000, "1", "", "").then((res) => console.log(res));
-//         }}
-//       >
-//         get results
-//       </button>
-//       <button
-//         onClick={() => {
-//           clearRooms();
-//         }}
-//       >
-//         clear rooms
-//       </button>
-//     </div>
-//   );
-// };
-
 const Home = (props) => {
+  const { setStage } = props;
+  // clearRooms();
+
+  const { history } = props;
+
   const [leftSel, selectLeft] = useState(true);
   const [location, setLocation] = useState(null); // [lat, long]
 
-  const submit = () => {
+  const submit = async () => {
     if (leftSel) {
-      createRoom(
+      await createRoom(
         document.getElementsByName("crewSize")[0].value,
         location ? location : document.getElementsByName("location")[0].value,
         document.getElementsByName("userName")[0].value
       );
     } else {
-      joinRoom(document.getElementsByName("crewId")[0].value, document.getElementsByName("userName")[0].value);
+      await joinRoom(document.getElementsByName("roomID")[0].value, document.getElementsByName("userName")[0].value);
     }
+    history.push("/room/" + sessionStorage.getItem("roomID"));
+    setStage(1);
   };
 
   const useMyLoc = () => {
@@ -77,8 +43,8 @@ const Home = (props) => {
 
   const joinElems = (
     <>
-      <div className={cx(styles.header)}>crew id</div>
-      <input className={cx(styles.input)} name="crewId" type="text" spellCheck="false" autoComplete="off" />
+      <div className={cx(styles.header)}>room id</div>
+      <input className={cx(styles.input)} name="roomID" type="text" spellCheck="false" autoComplete="none" />
     </>
   );
 
@@ -97,23 +63,28 @@ const Home = (props) => {
       />
       <div className={cx(styles.header2)}>or</div>
       <button
-        className={cx(styles.button, { [styles.active]: location })}
+        className={cx(styles.button, { [styles.pending]: location, [styles.active]: location && location[0] !== "" })}
         onClick={useMyLoc}
         disabled={!navigator.geolocation}
       >
-        {location && location[0] !== "" ? "location found " : "use my location "}
+        {location && location[0] !== "" ? "location found " : location ? "finding location " : "use my location "}
         <FontAwesomeIcon icon={faMapMarkerAlt} />
       </button>
     </>
   );
   return (
     <>
+      <div className={cx(styles.title)}>
+        <img className={styles.logo} src="/logo.png" alt="logo" />
+        crunchcrew
+      </div>
+      <div className={styles.slogan}>no (wo)man left behind.</div>
       <div className={cx(styles.row)}>
-        <div className={cx(styles.title, { [styles.titleActive]: leftSel })} onClick={() => selectLeft(true)}>
+        <div className={cx(styles.subtitle, { [styles.subtitleActive]: leftSel })} onClick={() => selectLeft(true)}>
           create crew
         </div>
         <div
-          className={cx(styles.title, { [styles.titleActive]: !leftSel })}
+          className={cx(styles.subtitle, { [styles.subtitleActive]: !leftSel })}
           onClick={() => {
             selectLeft(false);
           }}
@@ -123,7 +94,7 @@ const Home = (props) => {
       </div>
       <div className={cx(styles.container)}>
         <div className={cx(styles.header)}>your name</div>
-        <input className={cx(styles.input)} name="userName" type="text" spellCheck="false" autoComplete="none" />
+        <input className={cx(styles.input)} name="userName" type="text" spellCheck="false" autoComplete="off" />
         {leftSel ? createElems : joinElems}
         <button className={cx(styles.button2)} onClick={submit}>
           <FontAwesomeIcon icon={faSignInAlt} />

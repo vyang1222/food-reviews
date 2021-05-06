@@ -1,0 +1,38 @@
+@use "../../utilities/variables";
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-top: 2vh;
+  height: 30rem;
+  width: 25rem;
+  border: 0.15rem solid black;
+  border-radius: 0.5rem;
+  background: white;
+  font-size: 2rem;
+}
+
+.users {
+  padding: 0.5rem;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0 0.25rem;
+  font-weight: 500;
+}
+
+.icon {
+  height: 2rem;
+  margin-right: 0.5rem;
+}
+
+.label {
+  padding: 0.25rem 0.5rem;
+  color: variables.$secondary-color;
+  font-weight: 600;
+  text-align: right;
+}

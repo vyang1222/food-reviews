@@ -1,8 +1,31 @@
 @use "../../utilities/variables";
 
 .title {
-  margin: 0 2vw;
+  text-align: center;
+  font-size: 5rem;
+  font-weight: 800;
+  color: variables.$primary-color;
+  -webkit-text-stroke: 0.2rem black;
+  display: flex;
+  align-items: center;
+}
 
+.logo {
+  height: 5rem;
+  margin-right: 0.25rem;
+}
+
+.slogan {
+  margin-top: -0.5rem;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 800;
+  color: variables.$primary-color;
+  -webkit-text-stroke: 0.075rem black;
+}
+
+.subtitle {
+  margin: 0 2vw;
   color: darkgrey;
   font-weight: 600;
   text-align: center;
@@ -14,26 +37,24 @@
   }
 }
 
-.titleActive {
+.subtitleActive {
   color: black;
   text-decoration: underline;
 }
 
 .row {
   display: flex;
-
   font-size: 2.75rem;
 }
 
 .container {
   display: flex;
   flex-direction: column;
-
   font-size: 1.5rem;
 }
 
 .header {
-  margin: 1.5vh 0 0 0;
+  margin: 2.5vh 0 0 0;
   color: black;
   font-weight: 600;
 }
@@ -42,8 +63,7 @@
   width: 17.5rem;
   border: 0.15rem solid dimgray;
   padding: 0.25rem;
-
-  font-size: 1.75rem;
+  font-size: 2rem;
 }
 
 .header2 {
@@ -58,9 +78,8 @@
   border-radius: 0.5rem;
   border: 0.15rem solid dimgray;
   padding: 0.25rem;
-
   color: dimgray;
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: 600;
 
   &:hover {
@@ -68,28 +87,28 @@
   }
 }
 
+.pending {
+  background-color: lightcyan;
+  border-color: black;
+  color: black;
+}
+
 .active {
   background-color: lightblue;
-  border-color: black;
-
-  color: black;
 }
 
 .button2 {
   display: inline-block;
   cursor: pointer;
-
   margin: 1.5vh 0;
   background: inherit;
   border: none;
-
   color: darkgrey;
   font-size: 3rem;
   font-weight: 600;
 
   &:hover {
     border-color: black;
-
     color: black;
   }
 }

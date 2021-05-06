@@ -1,0 +1,16 @@
+.idArea {
+  position: absolute;
+  bottom: 12.5vh;
+  display: flex;
+  align-items: center;
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.id {
+  margin-left: 0.25vw;
+  background: white;
+  border: 0.15rem solid black;
+  border-radius: 0.25rem;
+  padding: 0.1rem 0.5rem;
+}

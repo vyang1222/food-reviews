@@ -1,5 +1,5 @@
 import express from "express";
-import { Restaurant, Preferences, User, Room } from "./Schemas";
+import { Preferences, User, Room } from "./Schemas";
 import { nanoid, customAlphabet } from "nanoid";
 const router = express.Router();
 
@@ -9,9 +9,11 @@ const generateRoomID = customAlphabet("ABCDEFGHJKMNOPQRSTUVWXYZ0123456789", 6);
 // returns user credentials
 router.post("/createRoom", async (req, res) => {
   const { location, numUsers, hostName } = req.body;
+  const roomID = generateRoomID();
   const host = new User({
     name: hostName,
     credentials: nanoid(),
+    roomID: roomID,
   });
 
   const _location = Array.isArray(location)
@@ -19,17 +21,17 @@ router.post("/createRoom", async (req, res) => {
     : { location: location };
 
   const room = new Room({
-    roomID: generateRoomID(),
+    roomID: roomID,
     ..._location,
     numUsers: numUsers,
     users: [host],
   });
 
   try {
-    const savedRoom = await room.save();
+    await room.save();
     const savedHost = await host.save();
-    console.log(`✓ host ${savedHost.name} created room ${savedRoom.roomID}`);
-    res.send({ credentials: savedHost.credentials, roomID: savedRoom.roomID });
+    console.log(`✓ host ${savedHost.name} created room ${savedHost.roomID}`);
+    res.send({ credentials: savedHost.credentials, roomID: savedHost.roomID });
   } catch (err) {
     console.log(err);
     res.end();
@@ -43,13 +45,14 @@ router.post("/joinRoom", async (req, res) => {
   const user = new User({
     name: userName,
     credentials: nanoid(),
+    roomID: roomID,
   });
 
   try {
     const savedUser = await user.save();
     await Room.updateOne({ roomID: roomID }, { $push: { users: savedUser } });
-    console.log(`☛ user ${savedUser.name} has joined room ${roomID}`);
-    res.send({ credentials: savedUser.credentials, roomID: roomID });
+    console.log(`☛ user ${savedUser.name} has joined room ${savedUser.roomID}`);
+    res.send({ credentials: savedUser.credentials, roomID: savedUser.roomID });
   } catch (err) {
     console.log(err);
     res.end();
@@ -79,37 +82,26 @@ router.post("/submitPrefs", async (req, res) => {
   }
 });
 
-// // returns list of restaurants if everyone has submitted their preferences
-// // otherwise returns empty list
-// router.get("/getRestaurants", async (req, res) => {
-//   const { credentials, roomID } = req.body;
+// returns [list of users and their state (1 if completed prefs, 0 otherwise), room size]
+router.get("/getUsers", async (req, res) => {
+  const { credentials, roomID } = req.query;
 
-//   try {
-//     const foundRoom = await Room.findOne({ room: roomID }).populate("users").exec();
-//     const allUsers = foundRoom.users;
-//     const doneUsers = allUsers.filter((user) => user.preferences !== null);
-//     if (doneUsers.length !== allUsers.length) {
-//       console.log("☒ waiting on " + (allUsers.length - doneUsers.length) + " users to submit their preferences...");
-//       res.send([]);
-//     } else {
-//       console.log("☑ all users have submitted their preferences");
-//       // *** call algorithm, which calls the YelpAPI (and populates user preferences to aggregate them) and returns the list of restaurants
-//       const restaurants = getRestaurants();
-//       // then, save the restaurants
-//       restaurants.forEach(_restaurant => {const restaurant = new Restaurant{}; await restaurant.save()})
-//       res.send(restaurants);
-//     }
-//   } catch (err) {
-//     console.log(err);
-//     res.end();
-//   }
-// });
-
-router.post("/submitRestaurants", async (req, res) => {
-  const { credentials, restaurantPicks } = req.body;
   try {
-    console.log(`☆ user ${foundUser.name} has submitted their restaurant picks`);
-    const foundUser = await User.findOneAndUpdate({ credentials: credentials }, { restaurantPicks: restaurantPicks });
+    const foundRoom = await Room.findOne({ roomID: roomID }).populate("users").exec();
+    const users = foundRoom.users.map((user) => [user.name, user.preferences !== null ? 1 : 0]);
+    res.send([users, foundRoom.numUsers]);
+  } catch (err) {
+    console.log(err);
+    res.end();
+  }
+});
+
+router.post("/submitPicks", async (req, res) => {
+  const { credentials, roomID, picks } = req.body;
+  try {
+    const foundUser = await User.findOneAndUpdate({ credentials: credentials }, { picks: picks });
+    console.log(`☆ user ${foundUser.name} has submitted their picks`);
+    await Room.updateOne({ roomID: roomID }, { $inc: { numPicksDone: 1 } });
     res.end();
   } catch (err) {
     console.log(err);

@@ -1,0 +1,55 @@
+@use "../../utilities/variables";
+
+.container {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.icon {
+  font-size: 4rem;
+  padding: 0.5rem;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.heartContainer {
+  .heart {
+    display: none;
+  }
+  &:hover {
+    .heart {
+      display: inline-block;
+    }
+    .heart2 {
+      display: none;
+    }
+  }
+}
+
+.trashContainer {
+  .trash {
+    display: none;
+  }
+  &:hover {
+    .trash {
+      display: inline-block;
+    }
+    .trash2 {
+      display: none;
+    }
+  }
+}
+
+.heart,
+.heart2 {
+  color: variables.$primary-color;
+}
+
+.trash,
+.trash2 {
+  color: slategrey;
+}

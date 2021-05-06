@@ -26,32 +26,53 @@ export const joinRoom = async (roomID, userName) => {
 };
 
 // preconditions: user has already joined room, and their credentials are already stored.
-//                radius is in meters.
-export const submitPrefs = async (radius, price, categories, attributes) => {
+//                radius is in miles. _categories and _attributes have at least 1 item.
+export const submitPrefs = async (_radius, price, _categories, _attributes) => {
+  const radius = _radius * 1609; // convert to meters
+  let categories = "";
+  _categories.forEach((category) => (categories += category + ","));
+  let attributes = "";
+  _attributes.forEach((attribute) => (attributes += attribute + ","));
+
   try {
     await axios.post("/submitPrefs", {
-      roomID: sessionStorage.getItem("roomID"),
       credentials: sessionStorage.getItem("credentials"),
+      roomID: sessionStorage.getItem("roomID"),
       radius: radius,
       price: price,
-      categories: categories,
-      attributes: attributes,
+      categories: categories.slice(0, -1),
+      attributes: attributes.slice(0, -1),
     });
   } catch (err) {
     console.log(err);
   }
 };
 
-// export const getRestaurants = async () => {
-//   try {
-//     await axios.get("/getRestaurants", {
-//       credentials: sessionStorage.getItem("credentials"),
-//       roomID: sessionStorage.getItem("roomID"),
-//     });
-//   } catch (err) {
-//     console.log(err);
-//   }
-// };
+export const submitPicks = async (picks) => {
+  try {
+    await axios.post("/submitPicks", {
+      credentials: sessionStorage.getItem("credentials"),
+      roomID: sessionStorage.getItem("roomID"),
+      picks: picks,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const getUsers = async () => {
+  try {
+    const res = await axios.get("/getUsers", {
+      params: {
+        credentials: sessionStorage.getItem("credentials"),
+        roomID: sessionStorage.getItem("roomID"),
+      },
+    });
+    return res.data;
+  } catch (err) {
+    console.log(err);
+  }
+};
 
 // (eventually will be automatic)
 export const clearRooms = async () => {

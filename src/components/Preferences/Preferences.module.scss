@@ -1,0 +1,107 @@
+@use "../../utilities/variables";
+
+.container {
+  display: flex;
+  flex-direction: column;
+  font-size: 1.5rem;
+}
+
+.title {
+  color: black;
+  font-size: 2.75rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: underline;
+}
+
+.header {
+  margin-top: 2vh;
+  color: black;
+  font-weight: 600;
+}
+
+.input {
+  width: 17.5rem;
+  border: 0.15rem solid dimgray;
+  padding: 0.25rem;
+  font-size: 1.75rem;
+}
+
+.label {
+  font-weight: 700;
+}
+
+$track-color: ghostwhite;
+$thumb-color: black;
+
+$thumb-radius: 0.25rem;
+$thumb-height: 2rem;
+$thumb-width: 1rem;
+
+$track-height: 0.75rem;
+$track-border-width: 0.1rem;
+$track-border-color: grey;
+
+$track-radius: 0.25rem;
+
+@mixin track {
+  height: $track-height;
+}
+
+@mixin thumb {
+  background: $thumb-color;
+  border-radius: $thumb-radius;
+  box-sizing: border-box;
+  height: $thumb-height;
+  width: $thumb-width;
+}
+
+.slider {
+  -webkit-appearance: none;
+  border: none;
+  margin: $thumb-height / 2.5 0 0 0;
+  background: inherit;
+
+  &:focus {
+    outline: 0;
+    &::-webkit-slider-runnable-track {
+      background: $track-color;
+    }
+    &::-moz-range-track {
+      background: $track-color;
+    }
+  }
+
+  &::-webkit-slider-runnable-track {
+    @include track;
+    background: $track-color;
+    border: $track-border-width solid $track-border-color;
+    border-radius: $track-radius;
+  }
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    @include thumb;
+    margin-top: ((-$track-border-width * 2 + $track-height) / 2 - $thumb-height / 2);
+  }
+
+  &::-moz-range-track {
+    @include track;
+    outline: none;
+    background: $track-color;
+    border: $track-border-width solid $track-border-color;
+    border-radius: $track-radius;
+  }
+
+  &::-moz-range-thumb {
+    @include thumb;
+    margin-top: ((-$track-border-width * 2 + $track-height) / 2 - $thumb-height / 2);
+  }
+}
+
+.options {
+  margin-top: 0.5vh;
+  border: $track-border-width solid dimgray;
+  height: 6.5rem;
+  font-size: 1.25rem;
+}
